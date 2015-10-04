@@ -19,6 +19,7 @@
   "dependencies": {
     "coffee-script": "^1.10.0",
     "commander": "^2.8.1",
-    "nraw": "^0.2.5"
+    "nraw": "^0.2.5",
+    "snoocore": "^3.2.0"
   }
 }
