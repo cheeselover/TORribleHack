@@ -18,6 +18,7 @@
   "homepage": "https://github.com/cheeselover/TORribleHack#readme",
   "dependencies": {
     "coffee-script": "^1.10.0",
+    "commander": "^2.8.1",
     "nraw": "^0.2.5"
   }
 }
