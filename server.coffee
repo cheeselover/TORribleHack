@@ -2,6 +2,7 @@ Snoocore = require 'snoocore'
 
 crypto = require 'crypto'
 request = require 'request'
+encoder = require './lzw_encoder.js'
 
 reddit = new Snoocore
   userAgent: 'TORribleHack 1.0'
@@ -26,17 +27,33 @@ decrypt = (text) ->
   dec
 
 
-scanReddit = ->
-  console.log "Scanning Subreddit..."
-  reddit('/r/torriblehack/new').get({limit: 1}).then (response) ->
-    post = response.data.children[0].data
-    if post.num_comments == 0
-      url = decrypt(post.selftext)
-      request url, (error, response, body) ->
-        if not error and response.statusCode is 200
-          console.log(body)
-        else
-          console.error(error)
+nextScanApproved = true
 
-# setInterval(scanReddit, 5000)
-scanReddit()
+scanReddit = ->
+  if nextScanApproved
+    nextScanApproved = false
+
+    console.log "Scanning Subreddit..."
+    reddit('/r/torriblehack/new').get({limit: 1}).then (response) ->
+      post = response.data.children[0].data
+      if post.num_comments == 0
+        url = decrypt(post.selftext)
+        request url, (error, response, body) ->
+          if not error and response.statusCode is 200
+            message = encrypt(encoder.encode(body))
+            request.post 'http://p.drmc.ca/documents', {formData: {data: message}}, (e, r, b) ->
+              reddit('/api/comment').post({
+                thing_id: post.name
+                text: encrypt(encoder.encode(JSON.parse(b).key))
+              }).then (response) ->
+                console.log("We did it guise!!!111!11!1\n")
+                nextScanApproved = true
+          else
+            console.error(error)
+            nextScanApproved = true
+
+      else
+        console.log "A bot has already taken care of this post! (Comments exist)\n"
+        nextScanApproved = true
+
+setInterval(scanReddit, 10000)
