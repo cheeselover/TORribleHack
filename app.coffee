@@ -5,6 +5,8 @@ program
   .action (cmd, url) ->
     if cmd is 'server'
       require './server'
+    else if cmd is 'proxy'
+      require './proxy'
     else
       require('./client').fetch url
 
