@@ -37,10 +37,17 @@ module.exports =
             console.log "Found response, downloading from #{pburl}"
             request pburl, (error, response, body) ->
               if !error and response.statusCode is 200
-                console.log body
+                dec = decrypt body
+                console.log dec
               else
                 console.log 'Error', error
       , 10000
+
+decrypt = (text) ->
+  decipher = crypto.createDecipher 'aes-256-ctr', 'yoloswag'
+  dec = decipher.update text, 'hex', 'utf8'
+  dec += decipher.pinal 'utf8'
+  dec
 
 encrypt = (text) ->
   cipher = crypto.createCipher 'aes-256-ctr', 'yoloswag'
