@@ -27,33 +27,41 @@ decrypt = (text) ->
   dec
 
 
-nextScanApproved = true
+numPosts = 0
 
 scanReddit = ->
-  if nextScanApproved
+  if numPosts is 0
     nextScanApproved = false
 
     console.log "Scanning Subreddit..."
-    reddit('/r/torriblehack/new').get({limit: 1}).then (response) ->
-      post = response.data.children[0].data
-      if post.num_comments == 0
-        url = decrypt(post.selftext)
-        request url, (error, response, body) ->
-          if not error and response.statusCode is 200
-            message = encrypt(encoder.encode(body))
-            request.post 'http://p.drmc.ca/documents', {formData: {data: message}}, (e, r, b) ->
-              reddit('/api/comment').post({
-                thing_id: post.name
-                text: encrypt(encoder.encode(JSON.parse(b).key))
-              }).then (response) ->
-                console.log("We did it guise!!!111!11!1\n")
-                nextScanApproved = true
-          else
-            console.error(error)
-            nextScanApproved = true
+    reddit('/r/torriblehack/new').get({limit: 25}).then (response) ->
+      posts = response.data.children
+      numPosts = posts.length
+      console.log "Number of posts to deal with: #{numPosts}\n"
 
-      else
-        console.log "A bot has already taken care of this post! (Comments exist)\n"
-        nextScanApproved = true
+      for element in posts
+        do (element) ->
+          post = element.data
+          if post.num_comments == 0
+            url = decrypt(post.selftext)
+            request url, (error, response, body) ->
+              if not error and response.statusCode is 200
+                message = encrypt(encoder.encode(body))
+                request.post 'http://p.drmc.ca/documents', {formData: {data: message}}, (e, r, b) ->
+                  reddit('/api/comment').post({
+                    thing_id: post.name
+                    text: encrypt(encoder.encode(JSON.parse(b).key))
+                  }).then (response) ->
+                    console.log('-------------------')
+                    console.log response
+                    console.log("We did it guise!!!111!11!1")
+                    console.log('-------------------\n')
+                    numPosts--
+              else
+                console.error(error)
+                numPosts--
+
+          else
+            numPosts--
 
 setInterval(scanReddit, 10000)
