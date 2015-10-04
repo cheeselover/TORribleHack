@@ -1,5 +1,3 @@
-r = require 'nraw'
-Reddit = new r 'TORribleHack'
 Snoocore = require 'snoocore'
 
 crypto = require 'crypto'
