@@ -2,6 +2,7 @@ Snoocore = require 'snoocore'
 
 crypto = require 'crypto'
 request = require 'request'
+encoder = require './lzw_encoder'
 
 module.exports =
   fetch: (url) ->
@@ -33,11 +34,11 @@ module.exports =
           if comments.length > 0
             clearInterval job
             comment = comments[0] # assume first comment
-            pburl = comment.data.body
+            pburl = encoder.decode decrypt comment.data.body
             console.log "Found response, downloading from #{pburl}"
-            request pburl, (error, response, body) ->
+            request "http://p.drmc.ca/raw/#{pburl}", (error, response, body) ->
               if !error and response.statusCode is 200
-                dec = decrypt body
+                dec = encoder.decode decrypt body
                 console.log dec
               else
                 console.log 'Error', error
@@ -46,7 +47,7 @@ module.exports =
 decrypt = (text) ->
   decipher = crypto.createDecipher 'aes-256-ctr', 'yoloswag'
   dec = decipher.update text, 'hex', 'utf8'
-  dec += decipher.pinal 'utf8'
+  dec += decipher.final 'utf8'
   dec
 
 encrypt = (text) ->
