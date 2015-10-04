@@ -5,7 +5,7 @@ request = require 'request'
 encoder = require './lzw_encoder'
 
 module.exports =
-  fetch: (url) ->
+  fetch: (url, callback) ->
     title = new Date().getTime()
     content = encrypt url
     reddit = new Snoocore
@@ -40,8 +40,10 @@ module.exports =
               if !error and response.statusCode is 200
                 dec = encoder.decode decrypt body
                 console.log dec
+                callback? null, dec
               else
                 console.log 'Error', error
+                callback? error, null
       , 10000
 
 decrypt = (text) ->
