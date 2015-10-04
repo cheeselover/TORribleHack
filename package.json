@@ -1,0 +1,23 @@
+{
+  "name": "torriblehack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheeselover/TORribleHack.git"
+  },
+  "author": "Daniel Rampelt <drampelt@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cheeselover/TORribleHack/issues"
+  },
+  "homepage": "https://github.com/cheeselover/TORribleHack#readme",
+  "dependencies": {
+    "coffee-script": "^1.10.0",
+    "nraw": "^0.2.5"
+  }
+}
